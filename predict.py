@@ -74,7 +74,7 @@ def main(options):
 
       output = nmt(src)
       s = ""
-      for ix in output: # try output[1:-1]
+      for ix in output[1:-1]:
         idx = ix.data[0]
         #if idx == 2: # if <s>, don't write it
         #  continue
