@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import dill
+import sys
 from torch.autograd import Variable
 
 def to_var(input, volatile=False):
@@ -50,8 +51,13 @@ class NMT(nn.Module):
         # miscellaneous
         self.logsoftmax = nn.LogSoftmax()
 
-    def forward(self, input_src_batch, input_trg_batch, training=False):
-        sent_len = input_trg_batch.size()[0]
+    def forward(self, input_src_batch, input_trg_batch=None):
+        if input_trg_batch is None:
+            training = False
+            sent_len = 150
+        else:
+            training = True
+            sent_len = input_trg_batch.size()[0]
 
         encoder_input = self.EEMB(input_src_batch)
         encoder_output, (hidden, context) = self.ENC(encoder_input)
@@ -62,24 +68,27 @@ class NMT(nn.Module):
         context = context.permute(1,2,0).contiguous().view(batch_size, self.ENC_hsize*2)
 
         output = to_var(torch.zeros(sent_len, batch_size, self.trg_vocab_size).fill_(-1))
-        output[0,:,2] = 0
+        output[0,:,2] = sys.maxint
 
-        word = to_var(torch.LongTensor(batch_size).fill_(2)) #
-
-        for i in xrange(1, sent_len):
-            c_t = self.ATTN(encoder_output, hidden)
-
-            if training:
+        word = to_var(torch.LongTensor(batch_size).fill_(2))
+        
+        if training:
+            for i in xrange(1, sent_len):
+                c_t = self.ATTN(encoder_output, hidden)
                 decoder_input = torch.cat([c_t, self.DEMB(input_trg_batch[i-1])], dim=1)
-            else:
+                (hidden, context) = self.DEC(decoder_input, (hidden, context))
+                word = self.logsoftmax(self.GEN(hidden))
+                output[i] = word
+        '''
+        else:
+            i = 1
+            while i < sent_len and 
+            for i in xrange(1, sent_len):
+                c_t = self.ATTN(encoder_output, hidden)
                 decoder_input = torch.cat([c_t, self.DEMB(word)], dim=1)
-
-            (hidden, context) = self.DEC(decoder_input, (hidden, context))
-
-
-            word = self.logsoftmax(self.GEN(hidden))
-            output[i] = word
-            if not training:
+                (hidden, context) = self.DEC(decoder_input, (hidden, context))
+                word = self.logsoftmax(self.GEN(hidden))
+                output[i] = word
                 _, word = torch.max(word, dim=1)
-
+        '''
         return output
