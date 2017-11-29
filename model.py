@@ -89,7 +89,7 @@ class NMT(nn.Module):
             output = to_var(torch.LongTensor(sent_len).fill_(2))
             word = output[0]
             i = 1
-            while i < sent_len and word[0] != 3:
+            while i < sent_len and word.data[0] != 3:
                 c_t = self.ATTN(encoder_output, hidden)
                 decoder_input = torch.cat([c_t, self.DEMB(word)], dim=1)
                 (hidden, context) = self.DEC(decoder_input, (hidden, context))
