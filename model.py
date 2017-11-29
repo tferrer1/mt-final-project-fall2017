@@ -68,7 +68,7 @@ class NMT(nn.Module):
         context = context.permute(1,2,0).contiguous().view(batch_size, self.ENC_hsize*2)
 
         output = to_var(torch.zeros(sent_len, batch_size, self.trg_vocab_size).fill_(-1))
-        output[0,:,2] = sys.maxint
+        output[0,:,2] = 10
 
         word = to_var(torch.LongTensor(batch_size).fill_(2))
         
