@@ -51,7 +51,7 @@ class NMT(nn.Module):
         # miscellaneous
         self.logsoftmax = nn.LogSoftmax()
 
-    def forward(self, input_src_batch, input_trg_batch=None):
+    def forward(self, input_src_batch, input_trg_batch=None, validating=False):
         if input_trg_batch is None:
             training = False
             sent_len = 150
@@ -75,10 +75,15 @@ class NMT(nn.Module):
         if training:
             for i in xrange(1, sent_len):
                 c_t = self.ATTN(encoder_output, hidden)
-                decoder_input = torch.cat([c_t, self.DEMB(input_trg_batch[i-1])], dim=1)
+                if validating:
+                    decoder_input = torch.cat([c_t, self.DEMB(word)], dim=1)
+                else:
+                    decoder_input = torch.cat([c_t, self.DEMB(input_trg_batch[i-1])], dim=1)
                 (hidden, context) = self.DEC(decoder_input, (hidden, context))
                 word = self.logsoftmax(self.GEN(hidden))
                 output[i] = word
+                if validating:
+                    _, word = torch.max(word, dim=1)
         '''
         else:
             i = 1
