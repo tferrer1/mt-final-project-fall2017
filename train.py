@@ -49,7 +49,7 @@ def to_var(input, volatile=False):
 def main(options):
 
   if torch.cuda.is_available():
-    cuda.set_device(1)
+    cuda.set_device(options.gpuid[0])
 
   src_train, src_dev, src_test, src_vocab = torch.load(open(options.data_file + "." + options.src_lang, 'rb'))
   trg_train, trg_dev, trg_test, trg_vocab = torch.load(open(options.data_file + "." + options.trg_lang, 'rb'))
@@ -83,7 +83,7 @@ def main(options):
       train_src_mask = to_var(batched_train_src_mask[batch_i])
       train_trg_mask = to_var(batched_train_trg_mask[batch_i])
 
-      sys_out_batch = nmt(train_src_batch, train_trg_batch, training=True)  # (trg_seq_len, batch_size, trg_vocab_size) # TODO: add more arguments as necessary
+      sys_out_batch = nmt(train_src_batch, train_trg_batch)  # (trg_seq_len, batch_size, trg_vocab_size) # TODO: add more arguments as necessary
       train_trg_mask = train_trg_mask.view(-1)
       train_trg_batch = train_trg_batch.view(-1)
       train_trg_batch = train_trg_batch.masked_select(train_trg_mask)
@@ -106,7 +106,7 @@ def main(options):
       dev_src_mask = to_var(batched_dev_src_mask[batch_i], volatile=True)
       dev_trg_mask = to_var(batched_dev_trg_mask[batch_i], volatile=True)
 
-      sys_out_batch = nmt(dev_src_batch, dev_trg_batch)  # (trg_seq_len, batch_size, trg_vocab_size) # TODO: add more arguments as necessary
+      sys_out_batch = nmt(dev_src_batch)  # (trg_seq_len, batch_size, trg_vocab_size) # TODO: add more arguments as necessary
       dev_trg_mask = dev_trg_mask.view(-1)
       dev_trg_batch = dev_trg_batch.view(-1)
       dev_trg_batch = dev_trg_batch.masked_select(dev_trg_mask)
