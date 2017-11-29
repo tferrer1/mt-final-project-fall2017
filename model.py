@@ -84,16 +84,18 @@ class NMT(nn.Module):
                 output[i] = word
                 if validating:
                     _, word = torch.max(word, dim=1)
-        '''
         else:
+            # inference must be with batch size 1
+            output = to_var(torch.LongTensor(sent_len).fill_(2))
+            word = output[0]
             i = 1
-            while i < sent_len and 
-            for i in xrange(1, sent_len):
+            while i < sent_len and word[0] != 3:
                 c_t = self.ATTN(encoder_output, hidden)
                 decoder_input = torch.cat([c_t, self.DEMB(word)], dim=1)
                 (hidden, context) = self.DEC(decoder_input, (hidden, context))
                 word = self.logsoftmax(self.GEN(hidden))
-                output[i] = word
                 _, word = torch.max(word, dim=1)
-        '''
+                output[i] = word
+                i += 1
+            output = output[:i]
         return output
