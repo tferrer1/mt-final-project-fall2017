@@ -9,7 +9,7 @@ import torch
 from torch import cuda
 from torch.autograd import Variable
 import math
-from model import NMT
+from modelRNN import NMT
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)s: %(message)s',
