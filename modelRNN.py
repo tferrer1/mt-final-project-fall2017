@@ -76,7 +76,7 @@ class GEN(nn.Module):
 
 class DEC(nn.Module):
     def __init__(self, opts):
-        super(Decoder, self).__init__()
+        super(DEC, self).__init__()
         
         self.embedding = EMB(opts['trg_voc_size'],opts['dim_emb'],opts['dropout'])
         self.attn_layer = ATTN(opts)
