@@ -547,7 +547,8 @@ class NMT(nn.Module):
     
     def forward(self, src_batch, trg_batch, src_mask, trg_mask):
         final_states, seq_context = self.encoder(src_batch)
-        decoder_output, dec_states, attns = self.decoder(src_batch, seq_context, final_states)
+        state = self.decoder.init_decoder_state(src_batch, seq_context, final_states)
+        decoder_output, dec_states, attns = self.decoder(trg_batch, seq_context, state)
         trg_len, batch_size, decoder_dim = decoder_output.size()
         seq_trg_log_prob = self.generator(decoder_output.view(trg_len * batch_size, -1)).view(trg_len, batch_size, -1)
         return seq_trg_log_prob
@@ -587,7 +588,7 @@ class NMT(nn.Module):
         self.generator.generate_linear.bias.data = params['0.bias']
     
     def decode(self, src_sent, trg_vocab, gpu=True):
-        seq_context, final_states = self.encoder(src_sent, None)
+        seq_context, final_states = self.encoder(src_sent)
         prev_h , prev_c = final_states
         
         # initial states
