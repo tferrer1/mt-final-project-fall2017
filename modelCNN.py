@@ -298,6 +298,8 @@ class CNNDecoder(nn.Module):
             self.attn_layers.append(
                 ConvMultiStepAttention(self.hidden_size))
 
+        self._copy = False
+
     def forward(self, input, context, state):
         """
         Forward through the CNNDecoder.
