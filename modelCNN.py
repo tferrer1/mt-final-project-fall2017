@@ -187,11 +187,11 @@ class CNNEncoder(EncoderBase):
         self.cnn = StackedCNN(num_layers, hidden_size,
                               cnn_kernel_width, dropout)
 
-    def forward(self, input):
+    def forward(self, input_batch):
         """ See EncoderBase.forward() for description of args and returns."""
         #self._check_args(input)
 
-        emb = self.embeddings(input)
+        emb = self.embeddings(input_batch)
         s_len, batch, emb_dim = emb.size()
 
         emb = emb.transpose(0, 1).contiguous()
@@ -407,11 +407,12 @@ class EMB(nn.Module):
     def __init__(self, voc_size, dim_emb, dropout):
         super(EMB, self).__init__()
         self.look_up = nn.Embedding(num_embeddings=voc_size, embedding_dim=dim_emb)
-        self.dropout = nn.Dropout(p=dropout)
+        #self.dropout = nn.Dropout(p=dropout)
         self.embedding_size = dim_emb
     
     def forward(self, batch_seq):
-        return self.dropout(self.look_up(batch_seq))
+        #return self.dropout(self.look_up(batch_seq))
+        return self.look_up(batch_seq)
 
 class ENC(nn.Module):
     def __init__(self, opts):
@@ -535,18 +536,18 @@ def get_var_maybe_avg(namespace, var_name, training, polyak_decay):
 class NMT(nn.Module):
     def __init__(self, opts):
         super(NMT, self).__init__()
-        emb = EMB(opts['src_voc_size'], opts['dim_emb'], opts['dropout'])
+        emb_dec = EMB(opts['src_voc_size'], opts['dim_emb'], opts['dropout'])
+        emb_enc = EMB(opts['trg_voc_size'], opts['dim_emb'], opts['dropout'])
         self.dim_rnn = opts['dim_rnn']
         #self.encoder = ENC(opts)
-        self.encoder = CNNEncoder(2, 1024, 5, 0.2, emb)
-        self.decoder = DEC(opts)
+        self.encoder = CNNEncoder(2, 1024, 5, 0.2, emb_enc)
+        #self.decoder = DEC(opts)
+        self.decoder = CNNDecoder(2, 1024, None, None, 5, 0.2, emb_dec)
         self.generator = GEN(opts)
     
     def forward(self, src_batch, trg_batch, src_mask, trg_mask):
         final_states, seq_context = self.encoder(src_batch)
-        print(final_states)
-        print(seq_context)
-        decoder_output = self.decoder(seq_context, src_mask, trg_batch, final_states)
+        decoder_output, dec_states, attns = self.decoder(src_batch, seq_context, final_states)
         trg_len, batch_size, decoder_dim = decoder_output.size()
         seq_trg_log_prob = self.generator(decoder_output.view(trg_len * batch_size, -1)).view(trg_len, batch_size, -1)
         return seq_trg_log_prob
