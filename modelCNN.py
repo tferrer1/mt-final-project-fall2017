@@ -407,12 +407,12 @@ class EMB(nn.Module):
     def __init__(self, voc_size, dim_emb, dropout):
         super(EMB, self).__init__()
         self.look_up = nn.Embedding(num_embeddings=voc_size, embedding_dim=dim_emb)
-        #self.dropout = nn.Dropout(p=dropout)
+        self.dropout = nn.Dropout(p=dropout)
         self.embedding_size = dim_emb
     
     def forward(self, batch_seq):
-        #return self.dropout(self.look_up(batch_seq))
-        return self.look_up(batch_seq)
+        return self.dropout(self.look_up(batch_seq))
+        #return self.look_up(batch_seq)
 
 class ENC(nn.Module):
     def __init__(self, opts):
@@ -536,8 +536,8 @@ def get_var_maybe_avg(namespace, var_name, training, polyak_decay):
 class NMT(nn.Module):
     def __init__(self, opts):
         super(NMT, self).__init__()
-        emb_dec = EMB(opts['src_voc_size'], opts['dim_emb'], opts['dropout'])
-        emb_enc = EMB(opts['trg_voc_size'], opts['dim_emb'], opts['dropout'])
+        emb_enc = EMB(opts['src_voc_size'], opts['dim_emb'], opts['dropout'])
+        emb_dec = EMB(opts['trg_voc_size'], opts['dim_emb'], opts['dropout'])
         self.dim_rnn = opts['dim_rnn']
         #self.encoder = ENC(opts)
         self.encoder = CNNEncoder(2, 1024, 5, 0.2, emb_enc)
