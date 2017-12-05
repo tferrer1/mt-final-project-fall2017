@@ -318,7 +318,7 @@ class CNNDecoder(nn.Module):
         """
         # CHECKS
         assert isinstance(state, CNNDecoderState)
-        input_len, input_batch, _ = input.size()
+        input_len, input_batch = input.size()
         contxt_len, contxt_batch, _ = context.size()
         aeq(input_batch, contxt_batch)
         # END CHECKS
