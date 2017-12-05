@@ -619,3 +619,4 @@ class NMT(nn.Module):
             w_list.append(trg_vocab.itos[w.data[0]])
             
         return u' '.join(w_list).encode('utf-8')
+
