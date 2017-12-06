@@ -118,9 +118,13 @@ class NMT(nn.Module):
         self.generator = GEN(opts)
     
     def forward(self, src_batch, trg_batch, src_mask, trg_mask):
-        seq_context, final_states = self.encoder(src_batch, src_mask)
+        #print(src_batch.size())
+	#print(trg_batch.size())
+	seq_context, final_states = self.encoder(src_batch, src_mask)
+	#print(seq_context.size())
         decoder_output = self.decoder(seq_context, src_mask, trg_batch, final_states)
         trg_len, batch_size, decoder_dim = decoder_output.size()
+	#print(decoder_output.size())
         seq_trg_log_prob = self.generator(decoder_output.view(trg_len * batch_size, -1)).view(trg_len, batch_size, -1)
         return seq_trg_log_prob
     
