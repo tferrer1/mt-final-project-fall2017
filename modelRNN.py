@@ -122,6 +122,8 @@ class NMT(nn.Module):
 	#print(trg_batch.size())
 	seq_context, final_states = self.encoder(src_batch, src_mask)
 	#print(seq_context.size())
+	print(seq_context)
+	print(final_states)
         decoder_output = self.decoder(seq_context, src_mask, trg_batch, final_states)
         trg_len, batch_size, decoder_dim = decoder_output.size()
 	#print(decoder_output.size())
