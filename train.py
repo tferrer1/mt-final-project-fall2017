@@ -113,6 +113,7 @@ def main(options):
 
       #print(sys_out_batch.size())
       #print(train_trg_mask.size())
+      print(sys_out_batch)
 
       train_trg_mask = train_trg_mask[1:].view(-1)
       train_trg_batch = train_trg_batch[1:].view(-1)
