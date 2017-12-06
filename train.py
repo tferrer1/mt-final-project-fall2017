@@ -97,7 +97,7 @@ def main(options):
     nmt.train()
     max_train_batch = len(batched_train_src)
     for i, batch_i in enumerate(utils.rand.srange(len(batched_train_src))):
-      print(i)
+      #print(i)
       train_src_batch = Variable(batched_train_src[batch_i])  # of size (src_seq_len, batch_size)
       train_trg_batch = Variable(batched_train_trg[batch_i])  # of size (src_seq_len, batch_size)
       train_src_mask = Variable(batched_train_src_mask[batch_i])
@@ -111,8 +111,8 @@ def main(options):
 
       sys_out_batch = nmt.forward(train_src_batch, train_trg_batch, train_src_mask, train_trg_mask)  # (trg_seq_len, batch_size, trg_vocab_size)
 
-      print(sys_out_batch.size())
-      print(train_trg_mask.size())
+      #print(sys_out_batch.size())
+      #print(train_trg_mask.size())
 
       train_trg_mask = train_trg_mask[1:].view(-1)
       train_trg_batch = train_trg_batch[1:].view(-1)
