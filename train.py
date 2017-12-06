@@ -122,7 +122,7 @@ def main(options):
       sys_out_batch = sys_out_batch.view(-1, trg_vocab_size)
       sys_out_batch = sys_out_batch.masked_select(train_trg_mask).view(-1, trg_vocab_size)
       loss = criterion(sys_out_batch, train_trg_batch)
-      if i % 1000 == 0:
+      if i % 100 == 0:
           logging.debug("loss at batch {0} / {3} ({2}): {1}".format(i, loss.data[0], batch_i, max_train_batch))
       optimizer.zero_grad()
       loss.backward()

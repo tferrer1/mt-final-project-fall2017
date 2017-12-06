@@ -551,18 +551,18 @@ class NMT(nn.Module):
         #print(src_batch)
         #print(trg_batch)
         final_states, seq_context = self.encoder(src_batch)
-        print("finished encoding")
+        #print("finished encoding")
         #print(final_states)
         #print(seq_context)
         state = self.decoder.init_decoder_state(src_batch, seq_context, final_states)
-        print("initialized decoder state")
+        #print("initialized decoder state")
         decoder_output, dec_states, attns = self.decoder(trg_batch, seq_context, state)
-        print("finished decoding")
+        #print("finished decoding")
 	decoder_output = decoder_output[1:,:,:]
         trg_len, batch_size, decoder_dim = decoder_output.size()
         #print(decoder_output)
         seq_trg_log_prob = self.generator(decoder_output.view(trg_len * batch_size, -1)).view(trg_len, batch_size, -1)
-        print("finished generating")
+        #print("finished generating")
         return seq_trg_log_prob
     
     def load_param(self, path):
