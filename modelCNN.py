@@ -567,40 +567,6 @@ class NMT(nn.Module):
         #print("finished generating")
         return seq_trg_log_prob
     
-    def load_param(self, path):
-        with open(path, 'rb') as f:
-            params = torch.load(f)
-        for key, value in params.iteritems():
-            print(key, value.size())
-            
-        # encoder param
-        self.encoder.embedding.look_up.weight.data = params['encoder.embeddings.emb_luts.0.weight']
-
-        self.encoder.bi_lstm.weight_hh_l0.data = params['encoder.rnn.weight_hh_l0']
-        self.encoder.bi_lstm.bias_hh_l0.data = params['encoder.rnn.bias_hh_l0']        
-        self.encoder.bi_lstm.weight_ih_l0.data = params['encoder.rnn.weight_ih_l0']
-        self.encoder.bi_lstm.bias_ih_l0.data = params['encoder.rnn.bias_ih_l0'] 
-
-        self.encoder.bi_lstm.weight_hh_l0_reverse.data = params['encoder.rnn.weight_hh_l0_reverse']
-        self.encoder.bi_lstm.bias_hh_l0_reverse.data = params['encoder.rnn.bias_hh_l0_reverse']        
-        self.encoder.bi_lstm.weight_ih_l0_reverse.data = params['encoder.rnn.weight_ih_l0_reverse']
-        self.encoder.bi_lstm.bias_ih_l0_reverse.data = params['encoder.rnn.bias_ih_l0_reverse'] 
-        
-        # decoder param
-        self.decoder.embedding.look_up.weight.data = params['decoder.embeddings.emb_luts.0.weight']
-
-        self.decoder.lstm_cell.weight_hh.data = params['decoder.rnn.layers.0.weight_hh']
-        self.decoder.lstm_cell.bias_hh.data = params['decoder.rnn.layers.0.bias_hh']
-        self.decoder.lstm_cell.weight_ih.data = params['decoder.rnn.layers.0.weight_ih']
-        self.decoder.lstm_cell.bias_ih.data = params['decoder.rnn.layers.0.bias_ih']
-
-        #self.decoder.linear_in.weight.data = params['decoder.attn.linear_in.weight'].transpose(0, 1)
-        self.decoder.attn_layer.linear_in.weight.data = params['decoder.attn.linear_in.weight']
-        self.decoder.attn_layer.linear_out.weight.data = params['decoder.attn.linear_out.weight']
-
-        self.generator.generate_linear.weight.data = params['0.weight']
-        self.generator.generate_linear.bias.data = params['0.bias']
-    
     def decode(self, src_sent, trg_vocab, gpu=True):
         seq_context, final_states = self.encoder(src_sent)
         prev_h , prev_c = final_states
