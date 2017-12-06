@@ -201,10 +201,10 @@ class CNNEncoder(EncoderBase):
         emb_remap = shape_transform(emb_remap)
         out = self.cnn(emb_remap)
 
-	print(emb_remap.squeeze(3).transpose(0, 1).contiguous().transpose(0, 2).contiguous())
+	#print(emb_remap.squeeze(3).transpose(0, 1).contiguous().transpose(0, 2).contiguous())
 
-        return emb_remap.squeeze(3).transpose(0, 1).contiguous(),\
-            out.squeeze(3).transpose(0, 1).contiguous()
+        return emb_remap.squeeze(3).transpose(0, 1).contiguous().transpose(0, 2).contiguous(),\
+            out.squeeze(3).transpose(0, 1).contiguous().transpose(0, 2).contiguous()
 
 def seq_linear(linear, x):
     # linear transform for 3-d tensor
